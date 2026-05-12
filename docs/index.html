@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DROGAMAIS PRO – Estoque Farmácia</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/icon-512.png">
+  <meta name="theme-color" content="#1a6fc4">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="DROGAMAIS PRO">
+</head>
+<body>
+
+<!-- ─── Splash Screen ──────────────────────────────────────────── -->
+<div id="splashScreen" class="splash">
+  <img src="icons/icon-512.png" alt="DROGAMAIS" class="splash-logo">
+  <div class="splash-name">DROGAMAIS PRO</div>
+  <div class="splash-sub">Gestão Completa de Estoque &amp; Compras</div>
+  <div class="splash-dots"><span></span><span></span><span></span></div>
+</div>
+
+<div class="app-layout">
+
+<!-- ─── Sidebar ─────────────────────────────────────────────────── -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <img src="icons/icon-192.png" alt="Logo">
+    <div>
+      <div class="brand">DROGAMAIS PRO</div>
+      <div class="version">v2.0</div>
+    </div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <button class="nav-item active" data-page="dashboard" onclick="navigateTo('dashboard')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Dashboard
+    </button>
+    <button class="nav-item" data-page="importar" onclick="navigateTo('importar')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      Importar Dados
+    </button>
+    <button class="nav-item" data-page="compras" onclick="navigateTo('compras')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+      Sugestão de Compras
+      <span class="badge-nav" id="badgeCompras" style="display:none">!</span>
+    </button>
+    <button class="nav-item" data-page="analise" onclick="navigateTo('analise')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      Análise &amp; Relatórios
+    </button>
+    <button class="nav-item" data-page="tributario" onclick="navigateTo('tributario')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      Tributário
+    </button>
+    <button class="nav-item" data-page="revendedores" onclick="navigateTo('revendedores')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+      Revendedores
+    </button>
+  </nav>
+
+  <div class="sidebar-footer">
+    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      <span id="themeLabel">Escuro</span>
+    </button>
+    <select id="unidadeSelect" style="font-size:.78rem;padding:4px 8px;border-radius:6px;border:1px solid var(--border);background:var(--card-bg);color:var(--text);max-width:120px;"></select>
+  </div>
+</aside>
+
+<!-- ─── Main Content ───────────────────────────────────────────── -->
+<div class="main-content">
+
+  <!-- Top bar -->
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <div class="topbar-title" id="pageTitle">Dashboard</div>
+    </div>
+    <div class="topbar-actions">
+      <div class="search-box">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="globalSearch" placeholder="Buscar produto..." oninput="handleGlobalSearch(this.value)">
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <!-- PAGE: Dashboard                                             -->
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <div class="page-section active" id="page-dashboard">
+    <div class="stats-row" id="dashStats">
+      <div class="stat-card"><div class="stat-icon">📦</div><div class="stat-value" id="dsTotalItens">–</div><div class="stat-label">Itens no Estoque</div></div>
+      <div class="stat-card success"><div class="stat-icon">💰</div><div class="stat-value" id="dsValorEstoque">–</div><div class="stat-label">Valor do Estoque</div></div>
+      <div class="stat-card"><div class="stat-icon">📊</div><div class="stat-value" id="dsTotalVendas">–</div><div class="stat-label">Vendas no Período</div></div>
+      <div class="stat-card danger"><div class="stat-icon">⚠️</div><div class="stat-value" id="dsCriticos">–</div><div class="stat-label">Estoque Crítico</div></div>
+      <div class="stat-card warning"><div class="stat-icon">🔄</div><div class="stat-value" id="dsGiroMedio">–</div><div class="stat-label">Giro Médio</div></div>
+      <div class="stat-card"><div class="stat-icon">📅</div><div class="stat-value" id="dsCobertura">–</div><div class="stat-label">Cobertura Média (dias)</div></div>
+    </div>
+
+    <div class="chart-row">
+      <div class="card">
+        <div class="card-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.21 15.89A10 10 0 118 2.83"/><path d="M22 12A10 10 0 0012 2v10z"/></svg>
+          Curva ABC – Distribuição
+        </div>
+        <div class="chart-container"><canvas id="chartABC"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          Top 10 Mais Vendidos
+        </div>
+        <div class="chart-container"><canvas id="chartTopVendas"></canvas></div>
+      </div>
+    </div>
+
+    <div class="chart-row">
+      <div class="card">
+        <div class="card-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Resumo Tributário
+        </div>
+        <div class="chart-container"><canvas id="chartTributario"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          Status do Estoque
+        </div>
+        <div class="chart-container"><canvas id="chartStatusEstoque"></canvas></div>
+      </div>
+    </div>
+
+    <div class="card" id="dashAlerts">
+      <div class="card-title">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        Alertas
+      </div>
+      <div id="alertsList">
+        <p style="color:var(--text-muted);font-size:.85rem;">Importe dados de estoque e vendas para ver alertas.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <!-- PAGE: Importar Dados                                        -->
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <div class="page-section" id="page-importar">
+    <div class="grid-2">
+      <!-- Upload Estoque -->
+      <div class="card">
+        <div class="card-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          1. Importar Estoque Atual
+        </div>
+        <label class="dropzone" id="estoqueDropzone">
+          <input type="file" id="estoqueCsvInput" accept=".csv,.txt,.xls,.xlsx">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          <strong>Arraste o arquivo de Estoque aqui</strong>
+          ou clique para selecionar<br>
+          <small>CSV ou XLS | Relatório de Estoque (rel_0079)</small>
+        </label>
+        <div class="progress-wrap" id="estoqueProgressWrap">
+          <div class="progress-bar-bg"><div class="progress-bar-fg" id="estoqueProgressFg" style="width:0%"></div></div>
+          <div class="progress-label" id="estoqueProgressLabel">0 / 0</div>
+        </div>
+        <p id="estoqueStatus" style="margin-top:10px;font-size:.85rem;color:var(--text-muted);"></p>
+      </div>
+
+      <!-- Upload Vendas -->
+      <div class="card">
+        <div class="card-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          2. Importar Histórico de Vendas
+        </div>
+        <label class="dropzone" id="vendasDropzone">
+          <input type="file" id="vendasCsvInput" accept=".csv,.txt,.xls,.xlsx">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          <strong>Arraste o arquivo de Vendas aqui</strong>
+          ou clique para selecionar<br>
+          <small>CSV ou XLS | Sugestão de Compras (rel_0016)</small>
+        </label>
+        <div class="progress-wrap" id="vendasProgressWrap">
+          <div class="progress-bar-bg"><div class="progress-bar-fg" id="vendasProgressFg" style="width:0%"></div></div>
+          <div class="progress-label" id="vendasProgressLabel">0 / 0</div>
+        </div>
+        <p id="vendasStatus" style="margin-top:10px;font-size:.85rem;color:var(--text-muted);"></p>
+      </div>
+    </div>
+
+    <!-- Period + Calculate -->
+    <div class="card">
+      <div class="card-title">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        3. Período de Cobertura
+      </div>
+      <p style="font-size:.85rem;color:var(--text-muted);margin-bottom:12px;">Para quantos dias você quer cobrir o estoque?</p>
+      <div class="period-group">
+        <button class="period-btn" data-dias="7">7 dias</button>
+        <button class="period-btn active" data-dias="14">14 dias</button>
+        <button class="period-btn" data-dias="21">21 dias</button>
+        <button class="period-btn" data-dias="28">28 dias</button>
+      </div>
+      <div style="margin-top:16px;">
+        <button id="btnCalcular" class="btn btn-primary" disabled onclick="calcular()">
+          Calcular Lista de Compras
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <!-- PAGE: Sugestão de Compras                                   -->
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <div class="page-section" id="page-compras">
+    <div class="card">
+      <div class="card-title">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+        Lista de Compras Inteligente
+      </div>
+
+      <div class="result-meta" id="comprasMeta">
+        <span>Cobertura: <strong><span id="metaDias">–</span> dias</strong></span>
+        <span>Itens: <strong><span id="metaTotal">–</span></strong></span>
+        <span>Valor: <strong><span id="metaValorTotal">–</span></strong></span>
+        <span>Gerado: <strong><span id="metaGerado">–</span></strong></span>
+      </div>
+
+      <div class="action-row" style="margin:12px 0;">
+        <button id="btnSelecionarTodos" class="btn btn-outline btn-sm" onclick="toggleTodos(true)">Selecionar Todos</button>
+        <button id="btnDesmarcarTodos" class="btn btn-outline btn-sm" onclick="toggleTodos(false)">Desmarcar Todos</button>
+        <div id="fabricanteFilterWrap" style="display:none;margin-left:8px;">
+          <select id="fabricanteSelect" style="min-width:200px;" onchange="aplicarFiltroPorFabricante(this.value)">
+            <option value="todos">Todos os Fornecedores</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="action-row" style="margin-bottom:12px;">
+        <button id="btnPdfComValores" class="btn btn-success btn-sm" onclick="exportarPdf(true)">PDF com Valores</button>
+        <button id="btnPdfSemValores" class="btn btn-outline btn-sm" onclick="exportarPdf(false)">Lista Cotação</button>
+        <button id="btnWhatsapp" class="btn btn-whatsapp btn-sm" onclick="compartilharWhatsapp()">WhatsApp</button>
+        <button class="btn btn-primary btn-sm" onclick="enviarPorFornecedor()">Pedidos por Fornecedor</button>
+      </div>
+
+      <div id="emptyState" class="empty-state" style="display:none;">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg>
+        <p>Todos os medicamentos estão com estoque suficiente!</p>
+      </div>
+
+      <div id="tabelaWrap" class="table-wrap" style="display:none;">
+        <table>
+          <thead>
+            <tr>
+              <th class="col-check"><input type="checkbox" id="checkAll" checked onchange="toggleTodos(this.checked)"></th>
+              <th style="cursor:pointer" onclick="sortTable(0)">#</th>
+              <th style="cursor:pointer" onclick="sortTable(1)">Medicamento</th>
+              <th style="cursor:pointer" onclick="sortTable(2)">Estoque</th>
+              <th style="cursor:pointer" onclick="sortTable(3)">Média/dia</th>
+              <th style="cursor:pointer" onclick="sortTable(4)">Projeção</th>
+              <th style="cursor:pointer" onclick="sortTable(5)">Comprar</th>
+              <th style="cursor:pointer" onclick="sortTable(6)">Urgência</th>
+              <th style="cursor:pointer" onclick="sortTable(7)">Vlr Unit.</th>
+              <th style="cursor:pointer" onclick="sortTable(8)">Valor Est.</th>
+            </tr>
+          </thead>
+          <tbody id="tabelaBody"></tbody>
+          <tfoot id="tabelaFoot"></tfoot>
+        </table>
+      </div>
+      <div class="pagination" id="comprasPagination"></div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <!-- PAGE: Análise & Relatórios                                  -->
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <div class="page-section" id="page-analise">
+    <div class="tab-group">
+      <button class="tab-btn active" onclick="switchTab('analise','tabMaisVendidos')">Mais Vendidos</button>
+      <button class="tab-btn" onclick="switchTab('analise','tabCurvaABC')">Curva ABC</button>
+      <button class="tab-btn" onclick="switchTab('analise','tabGiro')">Giro de Estoque</button>
+      <button class="tab-btn" onclick="switchTab('analise','tabCriticos')">Estoque Crítico</button>
+    </div>
+
+    <!-- Tab: Mais Vendidos -->
+    <div class="tab-content active" id="tabMaisVendidos">
+      <div class="card">
+        <div class="action-row" style="margin-bottom:14px;">
+          <span style="font-weight:600;">Exibir:</span>
+          <div class="period-group" id="topGroup">
+            <button class="period-btn top-btn active" data-top="10">Top 10</button>
+            <button class="period-btn top-btn" data-top="20">Top 20</button>
+            <button class="period-btn top-btn" data-top="50">Top 50</button>
+            <button class="period-btn top-btn" data-top="0">Todos</button>
+          </div>
+          <button id="btnRelatorio" class="btn btn-primary btn-sm" disabled onclick="gerarRelatorio()">Gerar Relatório</button>
+          <button id="btnRelatorioPdf" class="btn btn-success btn-sm" onclick="exportarRelatorioPdf()">Exportar PDF</button>
+        </div>
+        <div id="relatorioResultado" style="display:none;">
+          <div class="result-meta" id="relatorioMeta" style="margin-bottom:12px;"></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Medicamento</th><th>Total Vendido</th><th>Média Diária</th></tr></thead>
+              <tbody id="relatorioBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab: Curva ABC -->
+    <div class="tab-content" id="tabCurvaABC">
+      <div class="card">
+        <div class="card-title">Classificação ABC por Faturamento</div>
+        <div id="abcResumo" class="stats-row" style="margin-bottom:16px;"></div>
+        <div class="chart-container" style="max-height:400px;"><canvas id="chartABCDetail"></canvas></div>
+        <div class="table-wrap" style="margin-top:16px;">
+          <table>
+            <thead><tr><th>#</th><th>Classe</th><th>Medicamento</th><th>Valor</th><th>% Acumulado</th></tr></thead>
+            <tbody id="abcTableBody"></tbody>
+          </table>
+        </div>
+        <div class="pagination" id="abcPagination"></div>
+      </div>
+    </div>
+
+    <!-- Tab: Giro de Estoque -->
+    <div class="tab-content" id="tabGiro">
+      <div class="card">
+        <div class="card-title">Giro de Estoque e Cobertura</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Medicamento</th><th>Estoque</th><th>Vendas</th><th>Giro</th><th>Cobertura</th><th>Status</th></tr></thead>
+            <tbody id="giroTableBody"></tbody>
+          </table>
+        </div>
+        <div class="pagination" id="giroPagination"></div>
+      </div>
+    </div>
+
+    <!-- Tab: Estoque Crítico -->
+    <div class="tab-content" id="tabCriticos">
+      <div class="card">
+        <div class="card-title">Produtos com Estoque Crítico</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Medicamento</th><th>Estoque</th><th>Média/dia</th><th>Cobertura</th><th>Status</th></tr></thead>
+            <tbody id="criticosTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <!-- PAGE: Tributário                                            -->
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <div class="page-section" id="page-tributario">
+    <div class="stats-row" id="taxStats">
+      <div class="stat-card"><div class="stat-icon">💵</div><div class="stat-value" id="txBase">–</div><div class="stat-label">Base de Cálculo</div></div>
+      <div class="stat-card danger"><div class="stat-icon">🏛️</div><div class="stat-value" id="txTotal">–</div><div class="stat-label">Total Impostos</div></div>
+      <div class="stat-card warning"><div class="stat-icon">📊</div><div class="stat-value" id="txCarga">–</div><div class="stat-label">Carga Tributária</div></div>
+      <div class="stat-card"><div class="stat-icon">📋</div><div class="stat-value" id="txIcms">–</div><div class="stat-label">ICMS</div></div>
+      <div class="stat-card"><div class="stat-icon">📋</div><div class="stat-value" id="txPis">–</div><div class="stat-label">PIS</div></div>
+      <div class="stat-card"><div class="stat-icon">📋</div><div class="stat-value" id="txCofins">–</div><div class="stat-label">COFINS</div></div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">Distribuição por Tipo ICMS</div>
+        <div class="chart-container"><canvas id="chartIcmsTipo"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Distribuição por NCM</div>
+        <div class="chart-container"><canvas id="chartNcm"></canvas></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Detalhamento Tributário por Produto</div>
+      <div class="action-row" style="margin-bottom:12px;">
+        <button class="btn btn-success btn-sm" onclick="exportarTributarioPdf()">Exportar PDF Tributário</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Medicamento</th><th>NCM</th><th>ICMS Tipo</th><th>ICMS %</th><th>PIS %</th><th>COFINS %</th><th>Valor Base</th><th>Total Imp.</th></tr></thead>
+          <tbody id="taxTableBody"></tbody>
+        </table>
+      </div>
+      <div class="pagination" id="taxPagination"></div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <!-- PAGE: Revendedores                                          -->
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <div class="page-section" id="page-revendedores">
+    <div class="card">
+      <div class="card-title">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+        Cadastro de Fornecedores / Revendedores
+      </div>
+      <div class="action-row" style="margin-bottom:14px;">
+        <button class="btn btn-primary btn-sm" onclick="abrirModalRevendedor()">+ Novo Fornecedor</button>
+      </div>
+      <div id="revendedoresList"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Pedidos por Fornecedor</div>
+      <p style="font-size:.85rem;color:var(--text-muted);margin-bottom:12px;">
+        Selecione um fornecedor para gerar um pedido com os itens da lista de compras filtrados automaticamente.
+      </p>
+      <div class="action-row" style="margin-bottom:14px;">
+        <select id="fornecedorPedidoSelect" style="min-width:250px;">
+          <option value="">Selecione um fornecedor...</option>
+        </select>
+        <button class="btn btn-primary btn-sm" onclick="gerarPedidoFornecedor()">Gerar Pedido</button>
+        <button class="btn btn-whatsapp btn-sm" onclick="enviarPedidoWhatsApp()">Enviar WhatsApp</button>
+        <button class="btn btn-success btn-sm" onclick="exportarPedidoPdf()">Exportar PDF</button>
+      </div>
+      <div id="pedidoPreview" style="display:none;">
+        <div class="result-meta" id="pedidoMeta" style="margin-bottom:12px;"></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Produto</th><th>Qtd.</th><th>Vlr Unit.</th><th>Vlr Total</th></tr></thead>
+            <tbody id="pedidoBody"></tbody>
+            <tfoot id="pedidoFoot"></tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Histórico de Pedidos</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Pedido</th><th>Fornecedor</th><th>Data</th><th>Itens</th><th>Valor</th><th>Ações</th></tr></thead>
+          <tbody id="historicoBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main-content -->
+</div><!-- /app-layout -->
+
+<!-- ─── Modal: Novo Revendedor ─────────────────────────────────── -->
+<div class="modal-overlay" id="modalRevendedor">
+  <div class="modal">
+    <h3 id="modalRevendedorTitle">Novo Fornecedor</h3>
+    <input type="hidden" id="revendedorEditId">
+    <div class="form-group">
+      <label>Nome / Razão Social</label>
+      <input type="text" class="form-input" id="revNome" placeholder="Ex: Distribuidora ABC">
+    </div>
+    <div class="form-group">
+      <label>Contato</label>
+      <input type="text" class="form-input" id="revContato" placeholder="Nome do contato">
+    </div>
+    <div class="form-group">
+      <label>WhatsApp</label>
+      <input type="text" class="form-input" id="revWhatsapp" placeholder="(99) 99999-9999">
+    </div>
+    <div class="form-group">
+      <label>E-mail</label>
+      <input type="email" class="form-input" id="revEmail" placeholder="email@fornecedor.com">
+    </div>
+    <div class="form-group">
+      <label>Produtos / Laboratórios</label>
+      <textarea class="form-input" id="revProdutos" placeholder="Laboratórios ou produtos que fornece..."></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="fecharModalRevendedor()">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvarRevendedor()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── Toast ──────────────────────────────────────────────────── -->
+<div id="toast"></div>
+
+<!-- ─── Scripts ─────────────────────────────────────────────────── -->
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="js/config.js"></script>
+<script src="js/tax.js"></script>
+<script src="js/analytics.js"></script>
+<script src="js/resellers.js"></script>
+<script src="js/app.js"></script>
+
+<script>
+  // Splash
+  (function(){
+    var splash = document.getElementById('splashScreen');
+    function hide(){ splash.classList.add('splash-hide'); splash.addEventListener('transitionend',function(){splash.style.display='none';},{once:true}); }
+    window.addEventListener('load', function(){ setTimeout(hide, 1800); });
+  })();
+  // Service Worker
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function(){ navigator.serviceWorker.register('sw.js').catch(function(){}); });
+  }
+</script>
+</body>
+</html>
